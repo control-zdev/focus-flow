@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-Generate Focus-Flow Extension Icons
-Creates 16x16, 48x48, and 128x128 PNG icons with a gradient and pulse symbol
+Generate Focus-Flow Extension Icons with Cyan Theme
+Creates 16x16, 48x48, and 128x128 PNG icons with dark slate background and cyan accents
 """
 
 import os
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 import sys
 
 
 def create_icon(size: int) -> Image.Image:
     """
-    Create a Focus-Flow icon of specified size
+    Create a Focus-Flow icon of specified size with Cyan + Dark Slate theme
 
     Args:
         size: Icon size in pixels (16, 48, or 128)
@@ -19,30 +19,34 @@ def create_icon(size: int) -> Image.Image:
     Returns:
         PIL Image object
     """
-    # Create image with gradient background
-    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    # Create image with dark slate background
+    img = Image.new("RGBA", (size, size), (26, 26, 46, 255))  # #1a1a2e
     draw = ImageDraw.Draw(img)
 
-    # Draw gradient-like background (purple/blue)
+    # Draw darker background for depth
+    margin = max(1, size // 8)
+    coords = [0, 0, size, size]
+
+    # Subtle gradient-like effect (darker at corners)
     for y in range(size):
-        # Create gradient from #667eea (top) to #764ba2 (bottom)
-        r = int(102 + (118 - 102) * (y / size))
-        g = int(126 + (75 - 126) * (y / size))
-        b = int(234 + (162 - 234) * (y / size))
+        # Gradient from #1a1a2e to #16213e (slightly lighter in middle)
+        progress = abs(y - size / 2) / (size / 2)
+        r = int(26 + (22 - 26) * progress * 0.3)
+        g = int(26 + (33 - 26) * progress * 0.3)
+        b = int(46 + (62 - 46) * progress * 0.3)
         draw.line([(0, y), (size, y)], fill=(r, g, b, 255))
 
-    # Draw rounded square background
-    margin = max(1, size // 8)
+    # Draw rounded square container (darker)
     padding = margin
+    card_coords = [padding, padding, size - padding, size - padding]
+    draw.rounded_rectangle(
+        card_coords, radius=max(2, size // 6), fill=(22, 33, 62, 255)
+    )  # #16213e with alpha
 
-    # Draw filled rounded rectangle (the app icon background)
-    coords = [padding, padding, size - padding, size - padding]
-    draw.rounded_rectangle(coords, radius=max(2, size // 6), fill=(255, 255, 255, 255))
-
-    # Draw pulse symbol (circles representing monitoring)
+    # Draw cyan pulse circles (tech indicator)
     center = size // 2
 
-    # Outer circle
+    # Outer circle (cyan)
     circle_radius = max(2, size // 4)
     draw.ellipse(
         [
@@ -51,11 +55,11 @@ def create_icon(size: int) -> Image.Image:
             center + circle_radius,
             center + circle_radius,
         ],
-        outline=(102, 126, 234, 255),
+        outline=(15, 139, 141, 255),  # #0f8b8d
         width=max(1, size // 16),
     )
 
-    # Middle circle
+    # Middle circle (bright cyan)
     mid_radius = circle_radius * 2 // 3
     draw.ellipse(
         [
@@ -64,11 +68,11 @@ def create_icon(size: int) -> Image.Image:
             center + mid_radius,
             center + mid_radius,
         ],
-        outline=(102, 126, 234, 255),
-        width=max(1, size // 16),
+        outline=(0, 212, 255, 200),  # #00d4ff with slight transparency
+        width=max(1, size // 20),
     )
 
-    # Center dot
+    # Center dot (bright cyan - the "pulse")
     dot_radius = max(1, size // 12)
     draw.ellipse(
         [
@@ -77,8 +81,22 @@ def create_icon(size: int) -> Image.Image:
             center + dot_radius,
             center + dot_radius,
         ],
-        fill=(102, 126, 234, 255),
+        fill=(0, 212, 255, 255),  # #00d4ff
     )
+
+    # Add subtle glow effect (only for larger icons)
+    if size >= 48:
+        glow_radius = dot_radius + max(1, size // 20)
+        draw.ellipse(
+            [
+                center - glow_radius,
+                center - glow_radius,
+                center + glow_radius,
+                center + glow_radius,
+            ],
+            outline=(0, 212, 255, 80),  # Subtle glow
+            width=1,
+        )
 
     return img
 
@@ -95,32 +113,43 @@ def main():
     # Define icon sizes
     sizes = [16, 48, 128]
 
-    print("🎨 Generating Focus-Flow icons...")
+    print("🎨 Generating Focus-Flow Icons (Cyan + Dark Slate Theme)...")
+    print()
 
     for size in sizes:
         try:
             icon = create_icon(size)
             filename = f"{icons_dir}/icon-{size}.png"
             icon.save(filename, "PNG")
-            print(f"✓ Created {filename} ({size}x{size})")
+            print(f"✓ Created {filename:30} ({size}x{size})")
         except Exception as e:
             print(f"✗ Error creating {size}x{size} icon: {e}")
             sys.exit(1)
 
-    print("\n✨ All icons generated successfully!")
+    print()
+    print("✨ All icons generated successfully!")
+    print()
     print("📁 Directory structure:")
-    print(f"   extension/")
-    print(f"   ├── icons/")
-    print(f"   │   ├── icon-16.png")
-    print(f"   │   ├── icon-48.png")
-    print(f"   │   └── icon-128.png")
-    print(f"   ├── manifest.json")
-    print(f"   ├── background.js")
-    print(f"   ├── popup.html")
-    print(f"   ├── popup.js")
-    print(f"   ├── offscreen.html")
-    print(f"   └── offscreen.js")
-    print("\n🚀 Ready to load in Chrome!")
+    print("   extension/")
+    print("   ├── icons/")
+    print("   │   ├── icon-16.png     ← Toolbar icon")
+    print("   │   ├── icon-48.png     ← Extensions page")
+    print("   │   └── icon-128.png    ← Chrome Web Store")
+    print("   ├── manifest.json")
+    print("   ├── background.js")
+    print("   ├── popup.html")
+    print("   ├── popup.js")
+    print("   ├── offscreen.html")
+    print("   └── offscreen.js")
+    print()
+    print("🎨 Color Theme:")
+    print("   Background:  #1a1a2e (Dark Slate)")
+    print("   Card:        #16213e (Darker Slate)")
+    print("   Primary:     #0f8b8d (Teal)")
+    print("   Accent:      #00d4ff (Bright Cyan)")
+    print("   Glow:        Subtle cyan glow")
+    print()
+    print("🚀 Ready to load in Chrome!")
 
 
 if __name__ == "__main__":

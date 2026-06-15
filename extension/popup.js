@@ -1,6 +1,6 @@
 /**
- * Focus-Flow Popup Script (Final Version)
- * Green theme, no loading state, shows onboarding directly
+ * Focus-Flow Popup Script (Cyan Theme)
+ * Dark Slate + Cyan professional theme
  * CSP-compliant: All event listeners attached via JavaScript
  */
 
@@ -105,16 +105,16 @@ function renderMetrics() {
   setMetricValue("memory-value", latest.memory, 90);
   setMetricValue("temp-value", latest.temp || "--", 75);
 
-  // Update sparklines
+  // Update sparklines with cyan colors
   renderSparkline(
     "cpu-sparkline",
     metricsBuffer.map((m) => m.cpu),
-    "#10b981"
+    "#0f8b8d" // Teal
   );
   renderSparkline(
     "memory-sparkline",
     metricsBuffer.map((m) => m.memory),
-    "#059669"
+    "#00d4ff" // Bright Cyan
   );
 
   // Update averages
@@ -171,7 +171,7 @@ function renderSparkline(canvasId, data, color) {
   canvas.height = height;
 
   if (data.length === 0) {
-    ctx.fillStyle = "#f3f4f6";
+    ctx.fillStyle = "#0f1a2e";
     ctx.fillRect(0, 0, width, height);
     return;
   }
@@ -184,10 +184,10 @@ function renderSparkline(canvasId, data, color) {
   const max = Math.max(...validData);
   const range = max - min || 1;
 
-  // Draw background gradient
+  // Draw background gradient (dark to darker)
   const gradient = ctx.createLinearGradient(0, 0, 0, height);
-  gradient.addColorStop(0, `${color}30`);
-  gradient.addColorStop(1, `${color}08`);
+  gradient.addColorStop(0, `${color}25`);
+  gradient.addColorStop(1, `${color}05`);
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
 
@@ -249,7 +249,7 @@ function updateStatus(metrics) {
     statusText.textContent = "Alert";
   } else {
     statusDot.className = "status-dot";
-    statusText.textContent = "Online";
+    statusText.textContent = "Connected";
   }
 }
 
