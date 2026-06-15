@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Focus-Flow Monitor</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        width: 500px;
+        min-height: 600px;
+        color: #1f2937;
+      }
+
+      .container {
+        padding: 20px;
+        height: 100%;
+      }
+
+      /* ============ LOADING STATE ============ */
+      .state {
+        display: none;
+      }
+
+      .state.active {
+        display: block;
+      }
+
+      .loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 600px;
+        gap: 20px;
+      }
+
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loading-text {
+        color: white;
+        font-size: 14px;
+        text-align: center;
+      }
+
+      /* ============ ONBOARDING STATE ============ */
+      .onboarding-state {
+        background: white;
+        border-radius: 12px;
+        padding: 30px 20px;
+        margin-top: 40px;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      .onboarding-state h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #1f2937;
+      }
+
+      .onboarding-state p {
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 30px;
+        line-height: 1.6;
+      }
+
+      .onboarding-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background: #667eea;
+        color: white;
+        flex: 1;
+      }
+
+      .btn-primary:hover {
+        background: #5568d3;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn-secondary {
+        background: #e5e7eb;
+        color: #1f2937;
+        flex: 1;
+      }
+
+      .btn-secondary:hover {
+        background: #d1d5db;
+        transform: translateY(-2px);
+      }
+
+      /* ============ DASHBOARD STATE ============ */
+      .dashboard {
+        display: grid;
+        gap: 15px;
+      }
+
+      .header {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1f2937;
+      }
+
+      .header-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 6px 12px;
+        background: #f3f4f6;
+        border-radius: 6px;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #22c55e;
+      }
+
+      .status-dot.alert {
+        background: #ef4444;
+      }
+
+      /* ============ METRICS GRID ============ */
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
+      }
+
+      .metric-card {
+        background: white;
+        padding: 12px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .metric-label {
+        font-size: 11px;
+        color: #9ca3af;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+
+      .metric-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 4px;
+      }
+
+      .metric-value.warning {
+        color: #f59e0b;
+      }
+
+      .metric-value.critical {
+        color: #dc2626;
+      }
+
+      .metric-unit {
+        font-size: 12px;
+        color: #6b7280;
+      }
+
+      /* ============ SPARKLINE ============ */
+      .sparkline-section {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .sparkline-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .sparkline-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1f2937;
+      }
+
+      .sparkline-avg {
+        font-size: 12px;
+        color: #6b7280;
+      }
+
+      .sparkline-canvas {
+        width: 100%;
+        height: 40px;
+        border-radius: 4px;
+      }
+
+      /* ============ SERVICES ============ */
+      .services-section {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .services-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 10px;
+      }
+
+      .service-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .service-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+        background: #f9fafb;
+        border-radius: 6px;
+        font-size: 12px;
+        color: #4b5563;
+      }
+
+      .service-indicator {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #22c55e;
+      }
+
+      .service-name {
+        flex: 1;
+      }
+
+      .service-detail {
+        font-size: 11px;
+        color: #9ca3af;
+      }
+
+      /* ============ SETTINGS ============ */
+      .settings-section {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .settings-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 12px;
+      }
+
+      .setting-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #f3f4f6;
+      }
+
+      .setting-item:last-child {
+        border-bottom: none;
+      }
+
+      .setting-label {
+        font-size: 12px;
+        color: #4b5563;
+      }
+
+      .toggle {
+        position: relative;
+        width: 40px;
+        height: 24px;
+        background: #cbd5e0;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .toggle.on {
+        background: #22c55e;
+      }
+
+      .toggle-dot {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 20px;
+        height: 20px;
+        background: white;
+        border-radius: 50%;
+        transition: left 0.3s;
+      }
+
+      .toggle.on .toggle-dot {
+        left: 18px;
+      }
+
+      /* ============ ERROR STATE ============ */
+      .error-state {
+        background: white;
+        border-radius: 12px;
+        padding: 30px 20px;
+        margin-top: 40px;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      .error-state h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #dc2626;
+      }
+
+      .error-state p {
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 20px;
+      }
+
+      .retry-btn {
+        padding: 12px 24px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .retry-btn:hover {
+        background: #5568d3;
+        transform: translateY(-2px);
+      }
+
+      /* ============ FOOTER ============ */
+      .footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .footer a {
+        color: white;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+      }
+
+      .footer a:hover {
+        border-bottom-color: white;
+      }
+
+      /* ============ SCROLLBAR ============ */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 3px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Loading State -->
+      <div class="state loading-state active">
+        <div class="spinner"></div>
+        <div class="loading-text">Connecting to Focus-Flow Agent...</div>
+      </div>
+
+      <!-- Onboarding State -->
+      <div class="state onboarding-state" id="onboarding">
+        <h1>Welcome to Focus-Flow</h1>
+        <p>
+          Help us improve Focus-Flow by sharing anonymous usage insights. All
+          data stays local by default.
+        </p>
+        <div class="onboarding-buttons">
+          <button class="btn btn-primary" onclick="setConsent(true)">
+            Share Insights
+          </button>
+          <button class="btn btn-secondary" onclick="setConsent(false)">
+            Keep Private
+          </button>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div class="state" id="error-state">
+        <div class="error-state">
+          <h1>⚠️ Connection Failed</h1>
+          <p>Focus-Flow Agent is not responding. Make sure it's running:</p>
+          <code
+            style="
+              background: #f3f4f6;
+              padding: 8px;
+              border-radius: 4px;
+              display: block;
+              margin: 15px 0;
+              font-size: 12px;
+            "
+            >python agent.py</code
+          >
+          <button class="retry-btn" onclick="retryConnection()">
+            Retry Connection
+          </button>
+        </div>
+      </div>
+
+      <!-- Dashboard State -->
+      <div class="state" id="dashboard">
+        <div class="header">
+          <div class="header-title">💻 Focus-Flow</div>
+          <div class="header-status">
+            <div class="status-dot" id="status-dot"></div>
+            <span id="status-text">Connected</span>
+          </div>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">CPU</div>
+            <div class="metric-value" id="cpu-value">--</div>
+            <div class="metric-unit">%</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Memory</div>
+            <div class="metric-value" id="memory-value">--</div>
+            <div class="metric-unit">%</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Temperature</div>
+            <div class="metric-value" id="temp-value">--</div>
+            <div class="metric-unit">°C</div>
+          </div>
+        </div>
+
+        <div class="sparkline-section">
+          <div class="sparkline-header">
+            <div class="sparkline-title">CPU Trend (1 Hour)</div>
+            <div class="sparkline-avg" id="cpu-avg">Avg: --</div>
+          </div>
+          <canvas class="sparkline-canvas" id="cpu-sparkline"></canvas>
+        </div>
+
+        <div class="sparkline-section">
+          <div class="sparkline-header">
+            <div class="sparkline-title">Memory Trend (1 Hour)</div>
+            <div class="sparkline-avg" id="memory-avg">Avg: --</div>
+          </div>
+          <canvas class="sparkline-canvas" id="memory-sparkline"></canvas>
+        </div>
+
+        <div class="services-section">
+          <div class="services-title">🔌 Active Services</div>
+          <div class="service-list" id="services-list">
+            <div class="service-item">Detecting services...</div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-title">⚙️ Settings</div>
+          <div class="setting-item">
+            <div class="setting-label">Share Anonymous Insights</div>
+            <div class="toggle" id="consent-toggle" onclick="toggleConsent()">
+              <div class="toggle-dot"></div>
+            </div>
+          </div>
+          <div class="setting-item">
+            <div class="setting-label">Last Synced</div>
+            <div class="setting-label" id="last-sync" style="color: #9ca3af">
+              Never
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <p>🔒 Privacy-first • All data stays local by default</p>
+          <p>
+            <a
+              href="https://github.com/control-zdevFocus-Flow/focus-flow"
+              target="_blank"
+              >GitHub</a
+            >
+            | <a href="#" onclick="openPrivacyPolicy()">Privacy Policy</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
