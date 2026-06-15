@@ -4,3 +4,4 @@ python-multipart==0.0.6
 psutil==5.9.6
 pydantic==2.4.2
 python-dotenv==1.0.0
+Pillow>=9.0.0

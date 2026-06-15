@@ -14,24 +14,30 @@
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           Oxygen, Ubuntu, Cantarell, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        width: 500px;
-        min-height: 600px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        width: 480px;
+        height: 800px;
         color: #1f2937;
+        overflow: hidden;
       }
 
       .container {
-        padding: 20px;
+        padding: 12px;
         height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        overflow: hidden;
       }
 
-      /* ============ LOADING STATE ============ */
+      /* ============ STATE DISPLAY ============ */
       .state {
         display: none;
+        flex: 1;
       }
 
       .state.active {
-        display: block;
+        display: flex;
       }
 
       .loading-state {
@@ -39,7 +45,6 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 600px;
         gap: 20px;
       }
 
@@ -68,82 +73,133 @@
       .onboarding-state {
         background: white;
         border-radius: 12px;
-        padding: 30px 20px;
-        margin-top: 40px;
+        padding: 24px 16px;
         text-align: center;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
       }
 
       .onboarding-state h1 {
-        font-size: 24px;
-        margin-bottom: 10px;
+        font-size: 22px;
+        font-weight: 700;
         color: #1f2937;
       }
 
       .onboarding-state p {
-        font-size: 14px;
+        font-size: 13px;
         color: #6b7280;
-        margin-bottom: 30px;
-        line-height: 1.6;
+        line-height: 1.5;
+      }
+
+      .code-block {
+        background: #f3f4f6;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-family: "Courier New", monospace;
+        color: #1f2937;
+        border-left: 3px solid #10b981;
       }
 
       .onboarding-buttons {
         display: flex;
-        gap: 10px;
-        justify-content: center;
+        gap: 8px;
       }
 
       .btn {
-        padding: 12px 24px;
+        padding: 10px 16px;
         border: none;
-        border-radius: 8px;
-        font-size: 14px;
+        border-radius: 6px;
+        font-size: 13px;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .btn-primary {
-        background: #667eea;
-        color: white;
+        transition: all 0.2s ease;
         flex: 1;
       }
 
+      .btn-primary {
+        background: #10b981;
+        color: white;
+      }
+
       .btn-primary:hover {
-        background: #5568d3;
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        background: #059669;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
       }
 
       .btn-secondary {
         background: #e5e7eb;
         color: #1f2937;
-        flex: 1;
       }
 
       .btn-secondary:hover {
         background: #d1d5db;
-        transform: translateY(-2px);
+        transform: translateY(-1px);
       }
 
-      /* ============ DASHBOARD STATE ============ */
+      /* ============ ERROR STATE ============ */
+      .error-state {
+        background: white;
+        border-radius: 12px;
+        padding: 24px 16px;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .error-state h1 {
+        font-size: 20px;
+        color: #dc2626;
+      }
+
+      .error-state p {
+        font-size: 13px;
+        color: #6b7280;
+      }
+
+      .retry-btn {
+        padding: 10px 16px;
+        background: #10b981;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .retry-btn:hover {
+        background: #059669;
+        transform: translateY(-1px);
+      }
+
+      /* ============ DASHBOARD ============ */
       .dashboard {
-        display: grid;
-        gap: 15px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        overflow: hidden;
       }
 
       .header {
         background: white;
-        padding: 15px;
+        padding: 10px 12px;
         border-radius: 8px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        flex-shrink: 0;
       }
 
       .header-title {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 700;
         color: #1f2937;
       }
@@ -151,19 +207,31 @@
       .header-status {
         display: flex;
         align-items: center;
-        gap: 8px;
-        font-size: 12px;
+        gap: 6px;
+        font-size: 11px;
         font-weight: 600;
-        padding: 6px 12px;
+        padding: 4px 8px;
         background: #f3f4f6;
-        border-radius: 6px;
+        border-radius: 4px;
+        color: #10b981;
       }
 
       .status-dot {
-        width: 8px;
-        height: 8px;
+        width: 6px;
+        height: 6px;
         border-radius: 50%;
-        background: #22c55e;
+        background: #10b981;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.6;
+        }
       }
 
       .status-dot.alert {
@@ -174,30 +242,38 @@
       .metrics-grid {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
-        gap: 10px;
+        gap: 8px;
+        flex-shrink: 0;
       }
 
       .metric-card {
         background: white;
-        padding: 12px;
+        padding: 10px;
         border-radius: 8px;
         text-align: center;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.2s;
+      }
+
+      .metric-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
       }
 
       .metric-label {
-        font-size: 11px;
+        font-size: 10px;
         color: #9ca3af;
         font-weight: 600;
         text-transform: uppercase;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
+        letter-spacing: 0.5px;
       }
 
       .metric-value {
-        font-size: 24px;
+        font-size: 20px;
         font-weight: 700;
         color: #1f2937;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
       }
 
       .metric-value.warning {
@@ -209,219 +285,216 @@
       }
 
       .metric-unit {
-        font-size: 12px;
+        font-size: 11px;
         color: #6b7280;
       }
 
-      /* ============ SPARKLINE ============ */
+      /* ============ SPARKLINES ============ */
+      .sparklines-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        flex-shrink: 0;
+        height: 60px;
+      }
+
       .sparkline-section {
         background: white;
-        padding: 15px;
+        padding: 10px;
         border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
       }
 
       .sparkline-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 10px;
+        margin-bottom: 6px;
+        min-height: 0;
       }
 
       .sparkline-title {
-        font-size: 13px;
+        font-size: 11px;
         font-weight: 600;
         color: #1f2937;
       }
 
       .sparkline-avg {
-        font-size: 12px;
+        font-size: 10px;
         color: #6b7280;
+        font-weight: 500;
       }
 
       .sparkline-canvas {
         width: 100%;
-        height: 40px;
+        height: 32px;
         border-radius: 4px;
+        flex-shrink: 0;
       }
 
-      /* ============ SERVICES ============ */
-      .services-section {
+      /* ============ SERVICES & SETTINGS ROW ============ */
+      .bottom-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      .services-section,
+      .settings-section {
         background: white;
-        padding: 15px;
+        padding: 10px;
         border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
       }
 
-      .services-title {
-        font-size: 13px;
-        font-weight: 600;
+      .section-title {
+        font-size: 11px;
+        font-weight: 700;
         color: #1f2937;
-        margin-bottom: 10px;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        flex-shrink: 0;
       }
 
       .service-list {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 4px;
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
       }
 
       .service-item {
         display: flex;
         align-items: center;
-        gap: 8px;
-        padding: 8px;
+        gap: 6px;
+        padding: 5px;
         background: #f9fafb;
-        border-radius: 6px;
-        font-size: 12px;
+        border-radius: 4px;
+        font-size: 11px;
         color: #4b5563;
+        white-space: nowrap;
+        flex-shrink: 0;
       }
 
       .service-indicator {
-        width: 6px;
-        height: 6px;
+        width: 4px;
+        height: 4px;
         border-radius: 50%;
-        background: #22c55e;
+        background: #10b981;
+        flex-shrink: 0;
       }
 
       .service-name {
         flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
       }
 
       .service-detail {
-        font-size: 11px;
+        font-size: 10px;
         color: #9ca3af;
+        flex-shrink: 0;
       }
 
-      /* ============ SETTINGS ============ */
-      .settings-section {
-        background: white;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
-
-      .settings-title {
-        font-size: 13px;
-        font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 12px;
+      /* ============ SETTINGS CONTENT ============ */
+      .settings-content {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+        min-height: 0;
       }
 
       .setting-item {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px solid #f3f4f6;
-      }
-
-      .setting-item:last-child {
-        border-bottom: none;
+        padding: 6px 0;
+        flex-shrink: 0;
       }
 
       .setting-label {
-        font-size: 12px;
+        font-size: 11px;
         color: #4b5563;
+        font-weight: 500;
       }
 
       .toggle {
         position: relative;
-        width: 40px;
-        height: 24px;
+        width: 36px;
+        height: 20px;
         background: #cbd5e0;
-        border-radius: 12px;
+        border-radius: 10px;
         cursor: pointer;
-        transition: background 0.3s;
+        transition: background 0.2s;
+        flex-shrink: 0;
       }
 
       .toggle.on {
-        background: #22c55e;
+        background: #10b981;
       }
 
       .toggle-dot {
         position: absolute;
         top: 2px;
         left: 2px;
-        width: 20px;
-        height: 20px;
+        width: 16px;
+        height: 16px;
         background: white;
         border-radius: 50%;
-        transition: left 0.3s;
+        transition: left 0.2s;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
 
       .toggle.on .toggle-dot {
-        left: 18px;
+        left: 16px;
       }
 
-      /* ============ ERROR STATE ============ */
-      .error-state {
-        background: white;
-        border-radius: 12px;
-        padding: 30px 20px;
-        margin-top: 40px;
+      .last-sync {
+        font-size: 10px;
+        color: #9ca3af;
+        padding-top: 6px;
+        border-top: 1px solid #e5e7eb;
         text-align: center;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      }
-
-      .error-state h1 {
-        font-size: 24px;
-        margin-bottom: 10px;
-        color: #dc2626;
-      }
-
-      .error-state p {
-        font-size: 14px;
-        color: #6b7280;
-        margin-bottom: 20px;
-      }
-
-      .retry-btn {
-        padding: 12px 24px;
-        background: #667eea;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
-      }
-
-      .retry-btn:hover {
-        background: #5568d3;
-        transform: translateY(-2px);
+        flex-shrink: 0;
       }
 
       /* ============ FOOTER ============ */
       .footer {
         text-align: center;
-        margin-top: 20px;
-        font-size: 11px;
-        color: rgba(255, 255, 255, 0.7);
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.8);
+        padding-top: 4px;
+        flex-shrink: 0;
       }
 
       .footer a {
         color: white;
         text-decoration: none;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+        transition: border-color 0.2s;
       }
 
       .footer a:hover {
         border-bottom-color: white;
       }
 
-      .code-block {
-        background: #f3f4f6;
-        padding: 8px;
-        border-radius: 4px;
-        display: block;
-        margin: 15px 0;
-        font-size: 12px;
-      }
-
       /* ============ SCROLLBAR ============ */
       ::-webkit-scrollbar {
-        width: 6px;
+        width: 4px;
       }
 
       ::-webkit-scrollbar-track {
@@ -429,56 +502,42 @@
       }
 
       ::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.3);
-        border-radius: 3px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 2px;
       }
 
       ::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 255, 255, 0.5);
-      }
-      .code-block {
-        background: #f3f4f6;
-        padding: 8px;
-        border-radius: 4px;
-        display: block;
-        margin: 15px 0;
-        font-size: 12px;
-      }
-
-      .last-sync {
-        color: #9ca3af;
+        background: rgba(0, 0, 0, 0.3);
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <!-- Loading State -->
-      <div class="state loading-state active">
-        <div class="spinner"></div>
-        <div class="loading-text">Connecting to Focus-Flow Agent...</div>
-      </div>
-
       <!-- Onboarding State -->
-      <div class="state onboarding-state" id="onboarding">
+      <div class="state onboarding-state active" id="onboarding">
         <h1>Welcome to Focus-Flow</h1>
-          <code class="code-block">python agent.py</code>
-              background: #f3f4f6;
-              padding: 8px;
-              border-radius: 4px;
-              display: block;
-              margin: 15px 0;
-              font-size: 12px;
-            "
-            >python agent.py</code
-          >
-          <button class="retry-btn" onclick="retryConnection()">
-            Retry Connection
+        <p>Start the local monitoring agent to begin:</p>
+        <code class="code-block">python agent.py</code>
+        <div class="onboarding-buttons">
+          <button class="btn btn-primary" id="consent-yes-btn">
+            Help Improve
+          </button>
+          <button class="btn btn-secondary" id="consent-no-btn">
+            Keep Private
           </button>
         </div>
       </div>
 
+      <!-- Error State -->
+      <div class="state error-state" id="error-state">
+        <h1>❌ Agent Not Running</h1>
+        <p>Start the local monitoring agent:</p>
+        <code class="code-block">python agent.py</code>
+        <button class="retry-btn" id="retry-btn">Retry</button>
+      </div>
+
       <!-- Dashboard State -->
-      <div class="state" id="dashboard">
+      <div class="state dashboard" id="dashboard">
         <div class="header">
           <div class="header-title">💻 Focus-Flow</div>
           <div class="header-status">
@@ -499,63 +558,58 @@
             <div class="metric-unit">%</div>
           </div>
           <div class="metric-card">
-            <div class="metric-label">Temperature</div>
+            <div class="metric-label">Temp</div>
             <div class="metric-value" id="temp-value">--</div>
             <div class="metric-unit">°C</div>
           </div>
         </div>
 
-        <div class="sparkline-section">
-          <div class="sparkline-header">
-            <div class="sparkline-title">CPU Trend (1 Hour)</div>
-            <div class="sparkline-avg" id="cpu-avg">Avg: --</div>
+        <div class="sparklines-row">
+          <div class="sparkline-section">
+            <div class="sparkline-header">
+              <div class="sparkline-title">CPU</div>
+              <div class="sparkline-avg" id="cpu-avg">--</div>
+            </div>
+            <canvas class="sparkline-canvas" id="cpu-sparkline"></canvas>
           </div>
-          <canvas class="sparkline-canvas" id="cpu-sparkline"></canvas>
-        </div>
 
-        <div class="sparkline-section">
-          <div class="sparkline-header">
-            <div class="sparkline-title">Memory Trend (1 Hour)</div>
-            <div class="sparkline-avg" id="memory-avg">Avg: --</div>
-          </div>
-          <canvas class="sparkline-canvas" id="memory-sparkline"></canvas>
-        </div>
-
-        <div class="services-section">
-          <div class="services-title">🔌 Active Services</div>
-          <div class="service-list" id="services-list">
-            <div class="service-item">Detecting services...</div>
+          <div class="sparkline-section">
+            <div class="sparkline-header">
+              <div class="sparkline-title">Memory</div>
+              <div class="sparkline-avg" id="memory-avg">--</div>
+            </div>
+            <canvas class="sparkline-canvas" id="memory-sparkline"></canvas>
           </div>
         </div>
 
-        <div class="settings-section">
-          <div class="settings-title">⚙️ Settings</div>
-          <div class="setting-item">
-            <div class="setting-label">Share Anonymous Insights</div>
-            <div class="toggle" id="consent-toggle" onclick="toggleConsent()">
-              <div class="toggle-dot"></div>
+        <div class="bottom-row">
+          <div class="services-section">
+            <div class="section-title">🔌 Services</div>
+            <div class="service-list" id="services-list">
+              <div class="service-item">
+                <div class="service-indicator"></div>
+                <div class="service-name">Detecting...</div>
+              </div>
             </div>
           </div>
-            <div class="setting-label last-sync" id="last-sync">
-              Never
-            </div>
-              Never
+
+          <div class="settings-section">
+            <div class="section-title">⚙️ Settings</div>
+            <div class="settings-content">
+              <div class="setting-item">
+                <div class="setting-label">Share Data</div>
+                <div class="toggle" id="consent-toggle">
+                  <div class="toggle-dot"></div>
+                </div>
+              </div>
+              <div class="last-sync" id="last-sync">Never synced</div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="footer">
-          <p>🔒 Privacy-first • All data stays local by default</p>
-          <p>
-            <a
-            <a
-              href="https://github.com/control-zdevFocus-Flow/focus-flow"
-              target="_blank"
-              rel="noopener noreferrer"
-              >GitHub</a
-            >
-          </p>
-        </div>
+      <div class="footer">
+        <p>🔒 Privacy-first • Data stays local</p>
       </div>
     </div>
 

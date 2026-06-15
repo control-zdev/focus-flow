@@ -1,10 +1,11 @@
 /**
- * Focus-Flow Popup Script
- * Handles UI state, metrics rendering, and user interactions
+ * Focus-Flow Popup Script (Final Version)
+ * Green theme, no loading state, shows onboarding directly
+ * CSP-compliant: All event listeners attached via JavaScript
  */
 
 // State
-let currentState = "loading";
+let currentState = "onboarding";
 let lastMetrics = null;
 let lastServices = [];
 let userConsent = null;
@@ -15,8 +16,8 @@ let connectionRetries = 0;
  * Initialize popup on open
  */
 document.addEventListener("DOMContentLoaded", () => {
+  setupEventListeners();
   loadState();
-  setupListeners();
   checkConnection();
 
   // Refresh metrics every 2 seconds
@@ -26,6 +27,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, 2000);
 });
+
+/**
+ * Setup all event listeners (CSP-compliant)
+ */
+function setupEventListeners() {
+  // Onboarding buttons
+  const consentYesBtn = document.getElementById("consent-yes-btn");
+  const consentNoBtn = document.getElementById("consent-no-btn");
+  const retryBtn = document.getElementById("retry-btn");
+  const consentToggle = document.getElementById("consent-toggle");
+
+  if (consentYesBtn) {
+    consentYesBtn.addEventListener("click", () => setConsent(true));
+  }
+
+  if (consentNoBtn) {
+    consentNoBtn.addEventListener("click", () => setConsent(false));
+  }
+
+  if (retryBtn) {
+    retryBtn.addEventListener("click", retryConnection);
+  }
+
+  if (consentToggle) {
+    consentToggle.addEventListener("click", toggleConsent);
+  }
+}
 
 /**
  * Load current state from background service worker
@@ -58,6 +86,8 @@ function loadState() {
     if (metricsBuffer.length > 0) {
       showState("dashboard");
       renderMetrics();
+    } else {
+      showState("dashboard");
     }
   });
 }
@@ -79,12 +109,12 @@ function renderMetrics() {
   renderSparkline(
     "cpu-sparkline",
     metricsBuffer.map((m) => m.cpu),
-    "#667eea"
+    "#10b981"
   );
   renderSparkline(
     "memory-sparkline",
     metricsBuffer.map((m) => m.memory),
-    "#764ba2"
+    "#059669"
   );
 
   // Update averages
@@ -95,8 +125,8 @@ function renderMetrics() {
     metricsBuffer.reduce((sum, m) => sum + m.memory, 0) / metricsBuffer.length
   );
 
-  document.getElementById("cpu-avg").textContent = `Avg: ${cpuAvg}%`;
-  document.getElementById("memory-avg").textContent = `Avg: ${memAvg}%`;
+  document.getElementById("cpu-avg").textContent = `${cpuAvg}%`;
+  document.getElementById("memory-avg").textContent = `${memAvg}%`;
 
   // Update status
   updateStatus(latest);
@@ -147,14 +177,17 @@ function renderSparkline(canvasId, data, color) {
   }
 
   // Find min/max
-  const min = Math.min(...data.filter((d) => d !== null));
-  const max = Math.max(...data.filter((d) => d !== null));
+  const validData = data.filter((d) => d !== null && !isNaN(d));
+  if (validData.length === 0) return;
+
+  const min = Math.min(...validData);
+  const max = Math.max(...validData);
   const range = max - min || 1;
 
   // Draw background gradient
   const gradient = ctx.createLinearGradient(0, 0, 0, height);
-  gradient.addColorStop(0, `${color}20`);
-  gradient.addColorStop(1, `${color}05`);
+  gradient.addColorStop(0, `${color}30`);
+  gradient.addColorStop(1, `${color}08`);
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
 
@@ -165,13 +198,16 @@ function renderSparkline(canvasId, data, color) {
   ctx.lineJoin = "round";
 
   ctx.beginPath();
+  let hasMovedTo = false;
+
   data.forEach((value, index) => {
-    if (value === null) return;
+    if (value === null || isNaN(value)) return;
     const x = (index / Math.max(data.length - 1, 1)) * width;
     const y = height - ((value - min) / range) * height;
 
-    if (index === 0) {
+    if (!hasMovedTo) {
       ctx.moveTo(x, y);
+      hasMovedTo = true;
     } else {
       ctx.lineTo(x, y);
     }
@@ -181,11 +217,11 @@ function renderSparkline(canvasId, data, color) {
   // Draw data points
   ctx.fillStyle = color;
   data.forEach((value, index) => {
-    if (value === null) return;
+    if (value === null || isNaN(value)) return;
     const x = (index / Math.max(data.length - 1, 1)) * width;
     const y = height - ((value - min) / range) * height;
     ctx.beginPath();
-    ctx.arc(x, y, 2, 0, Math.PI * 2);
+    ctx.arc(x, y, 1.5, 0, Math.PI * 2);
     ctx.fill();
   });
 }
@@ -199,7 +235,7 @@ function updateStatus(metrics) {
 
   if (!metrics) {
     statusDot.className = "status-dot";
-    statusText.textContent = "Disconnected";
+    statusText.textContent = "Offline";
     return;
   }
 
@@ -210,11 +246,46 @@ function updateStatus(metrics) {
 
   if (hasAlert) {
     statusDot.className = "status-dot alert";
-    statusText.textContent = "⚠️ Alert";
+    statusText.textContent = "Alert";
   } else {
     statusDot.className = "status-dot";
-    statusText.textContent = "✓ Connected";
+    statusText.textContent = "Online";
   }
+}
+
+/**
+ * Render services list
+ */
+function renderServices(services) {
+  const servicesList = document.getElementById("services-list");
+  if (!servicesList) return;
+
+  lastServices = services;
+
+  if (!services || services.length === 0) {
+    servicesList.innerHTML = `
+      <div class="service-item">
+        <div class="service-indicator"></div>
+        <div class="service-name">No active services</div>
+      </div>
+    `;
+    return;
+  }
+
+  servicesList.innerHTML = services
+    .slice(0, 6)
+    .map(
+      (service) => `
+    <div class="service-item">
+      <div class="service-indicator"></div>
+      <div class="service-name">${service.name}</div>
+      ${
+        service.port ? `<div class="service-detail">#${service.port}</div>` : ""
+      }
+    </div>
+  `
+    )
+    .join("");
 }
 
 /**
@@ -223,30 +294,17 @@ function updateStatus(metrics) {
 function showState(state) {
   currentState = state;
 
-  const states = ["loading", "onboarding", "dashboard", "error"];
-  states.forEach((s) => {
-    const element =
-      document.getElementById(s + "-state") ||
-      document.querySelector(`.${s}-state`);
-    if (element) {
-      element.classList.remove("active");
-    }
-  });
-
-  // Special handling for default states in HTML
-  const loadingElem = document.querySelector(".loading-state");
   const onboardingElem = document.getElementById("onboarding");
   const dashboardElem = document.getElementById("dashboard");
   const errorElem = document.getElementById("error-state");
 
-  loadingElem?.classList.remove("active");
+  // Hide all states
   onboardingElem?.classList.remove("active");
   dashboardElem?.classList.remove("active");
   errorElem?.classList.remove("active");
 
-  if (state === "loading") {
-    loadingElem?.classList.add("active");
-  } else if (state === "onboarding") {
+  // Show requested state
+  if (state === "onboarding") {
     onboardingElem?.classList.add("active");
   } else if (state === "dashboard") {
     dashboardElem?.classList.add("active");
@@ -291,20 +349,6 @@ function updateConsentToggle(value) {
 }
 
 /**
- * Setup event listeners
- */
-function setupListeners() {
-  // Listen for metrics updates from background
-  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.type === "metrics_update") {
-      if (currentState === "dashboard") {
-        renderMetrics();
-      }
-    }
-  });
-}
-
-/**
  * Check agent connection
  */
 function checkConnection() {
@@ -329,7 +373,6 @@ function checkConnection() {
  */
 function retryConnection() {
   connectionRetries = 0;
-  showState("loading");
   checkConnection();
 
   setTimeout(() => {
@@ -339,10 +382,36 @@ function retryConnection() {
 }
 
 /**
- * Open privacy policy
+ * Listen for metrics updates from background service worker
  */
-function openPrivacyPolicy() {
-  chrome.tabs.create({
-    url: "https://github.com/control-zdevFocus-Flow/focus-flow/blob/main/PRIVACY_POLICY.md",
-  });
-}
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type === "metrics_update") {
+    if (currentState === "dashboard") {
+      // Update metrics
+      if (request.metrics) {
+        const timestamp = Date.now();
+        metricsBuffer.push({
+          timestamp,
+          cpu: request.metrics.cpu_percent,
+          memory: request.metrics.memory_percent,
+          temp: request.metrics.cpu_temp,
+          disk: request.metrics.disk_percent,
+        });
+
+        // Keep buffer at reasonable size
+        if (metricsBuffer.length > 1800) {
+          metricsBuffer.shift();
+        }
+
+        renderMetrics();
+      }
+
+      // Update services
+      if (request.services) {
+        renderServices(request.services);
+      }
+    }
+  }
+});
+
+console.log("[Focus-Flow] Popup loaded ✓");
