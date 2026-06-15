@@ -410,6 +410,15 @@
         border-bottom-color: white;
       }
 
+      .code-block {
+        background: #f3f4f6;
+        padding: 8px;
+        border-radius: 4px;
+        display: block;
+        margin: 15px 0;
+        font-size: 12px;
+      }
+
       /* ============ SCROLLBAR ============ */
       ::-webkit-scrollbar {
         width: 6px;
@@ -427,6 +436,18 @@
       ::-webkit-scrollbar-thumb:hover {
         background: rgba(255, 255, 255, 0.5);
       }
+      .code-block {
+        background: #f3f4f6;
+        padding: 8px;
+        border-radius: 4px;
+        display: block;
+        margin: 15px 0;
+        font-size: 12px;
+      }
+
+      .last-sync {
+        color: #9ca3af;
+      }
     </style>
   </head>
   <body>
@@ -440,27 +461,7 @@
       <!-- Onboarding State -->
       <div class="state onboarding-state" id="onboarding">
         <h1>Welcome to Focus-Flow</h1>
-        <p>
-          Help us improve Focus-Flow by sharing anonymous usage insights. All
-          data stays local by default.
-        </p>
-        <div class="onboarding-buttons">
-          <button class="btn btn-primary" onclick="setConsent(true)">
-            Share Insights
-          </button>
-          <button class="btn btn-secondary" onclick="setConsent(false)">
-            Keep Private
-          </button>
-        </div>
-      </div>
-
-      <!-- Error State -->
-      <div class="state" id="error-state">
-        <div class="error-state">
-          <h1>⚠️ Connection Failed</h1>
-          <p>Focus-Flow Agent is not responding. Make sure it's running:</p>
-          <code
-            style="
+          <code class="code-block">python agent.py</code>
               background: #f3f4f6;
               padding: 8px;
               border-radius: 4px;
@@ -535,9 +536,9 @@
               <div class="toggle-dot"></div>
             </div>
           </div>
-          <div class="setting-item">
-            <div class="setting-label">Last Synced</div>
-            <div class="setting-label" id="last-sync" style="color: #9ca3af">
+            <div class="setting-label last-sync" id="last-sync">
+              Never
+            </div>
               Never
             </div>
           </div>
@@ -547,11 +548,12 @@
           <p>🔒 Privacy-first • All data stays local by default</p>
           <p>
             <a
+            <a
               href="https://github.com/control-zdevFocus-Flow/focus-flow"
               target="_blank"
+              rel="noopener noreferrer"
               >GitHub</a
             >
-            | <a href="#" onclick="openPrivacyPolicy()">Privacy Policy</a>
           </p>
         </div>
       </div>
