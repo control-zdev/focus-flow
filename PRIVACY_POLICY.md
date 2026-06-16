@@ -145,7 +145,7 @@ We may update this privacy policy as Focus-Flow evolves. We will notify you of s
 
 - 📧 Email: [privacy@focus-flow.dev](brevin5ive@gmail.com) (when available)
 - 🐙 GitHub Issues: [control-zdevFocus-Flow/focus-flow](https://github.com/control-zdevFocus-Flow/focus-flow)
-- 📖 Documentation: [focus-flow.dev](https://focus-flow.dev) (when available)
+- 📖 Documentation: [focus-flow.dev](https://github.com/control-zdevFocus-Flow/focus-flow) (when available)
 
 ---
 
